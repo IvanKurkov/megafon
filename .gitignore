@@ -2,3 +2,7 @@
 project/data/features.csv
 
 project/data/train_data.csv
+
+data/data_train.csv
+
+data/features.csv
