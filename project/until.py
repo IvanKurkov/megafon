@@ -57,7 +57,7 @@ def treshold_search(y_true, y_pred):
 
 def preprocess_data_train(prep_data_df, FEATURES_DATA):
     prep_data_df['buy_time'] = pd.to_datetime(prep_data_df['buy_time'], unit='s')
-    prep_data_df = prep_data_df.drop('Unnamed: 0', axis=1)
+    #prep_data_df = prep_data_df.drop('Unnamed: 0', axis=1)
     prep_data_df['monthday'] = prep_data_df['buy_time'].dt.day
     prep_data_df = prep_data_df.sort_values('buy_time')
     prep_data_df['not_first_offer'] = prep_data_df.duplicated('id').astype(int)
@@ -73,13 +73,17 @@ def preprocess_data_train(prep_data_df, FEATURES_DATA):
 
     result_data.drop(['id', 'buy_time'], axis=1, inplace=True)
     result_data.drop_duplicates(inplace=True)
-
+    
+    result_data = result_data.set_index(['Unnamed: 0'])
+    result_data.index.name = None
+    result_data.sort_index(inplace=True)
+    
     return result_data, train_list_index
 
 
 def preprocess_data_test(prep_data_df, FEATURES_DATA, train_list_index):
     prep_data_df['buy_time'] = pd.to_datetime(prep_data_df['buy_time'], unit='s')
-    prep_data_df = prep_data_df.drop('Unnamed: 0', axis=1)
+    #prep_data_df = prep_data_df.drop('Unnamed: 0', axis=1)
     prep_data_df['monthday'] = prep_data_df['buy_time'].dt.day
     prep_data_df = prep_data_df.sort_values('buy_time')
     prep_data_df['not_first_offer'] = (prep_data_df['id'].isin(train_list_index)).astype(int)
@@ -94,8 +98,11 @@ def preprocess_data_test(prep_data_df, FEATURES_DATA, train_list_index):
     result_data = pd.merge_asof(prep_data_df, features_data_df, on='buy_time', by='id', direction='nearest')
 
     result_data.drop(['id', 'buy_time'], axis=1, inplace=True)
+    
+    result_data = result_data.set_index(['Unnamed: 0'])
+    result_data.index.name = None
     result_data.sort_index(inplace=True)
-
+    
     return result_data
 
 
